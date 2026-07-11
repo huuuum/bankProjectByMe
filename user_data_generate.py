@@ -17,7 +17,7 @@ cust_data = {
     "register_years":np.random.randint(2020,2026,size=cust_count), #用户开户年份
 }
 cust_df = pd.DataFrame(cust_data)
-cust_df.to_csv('cust_info.csv',index=False,encoding='utf-8-sig')
+cust_df.to_csv('data/cust_info.csv',index=False,encoding='utf-8-sig')
 print('用户信息表生成完毕')
 print('用户表前十行数据：',cust_df.head(10))
 print('用户表形状：',cust_df.shape)
@@ -35,8 +35,8 @@ loan_data = {
 }
 loan_df = pd.DataFrame(loan_data)
 
-loan_df['is_defalut'] = loan_df['overdue_days'].apply(lambda x : 1 if x>=30 else 0) #判断是否违约
-loan_df.to_csv('loan_info.csv',index=False,encoding='utf-8-sig')
+loan_df['is_default'] = loan_df['overdue_days'].apply(lambda x : 1 if x>=30 else 0) #判断是否违约
+loan_df.to_csv('data/loan_info.csv',index=False,encoding='utf-8-sig')
 print('贷款业务表生成完毕')
 print('贷款表前十行数据：',cust_df.head(10))
 print('贷款表形状：',cust_df.shape)
