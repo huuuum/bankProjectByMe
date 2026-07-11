@@ -33,4 +33,10 @@ loan_data = {
     "overdue_days":np.random.choice([0, 3, 10, 30, 60, 90],size=loan_count,p=(0.7, 0.1, 0.08, 0.06, 0.04, 0.02)), #逾期天数
     "issue_date":pd.date_range(start='2023-1-1',end='2024-12-31',periods=loan_count).strftime('%Y-%m-%d'), #放款日期
 }
-loan_df = pd.DataFrame(cust_df)
+loan_df = pd.DataFrame(loan_data)
+
+loan_df['is_defalut'] = loan_df['overdue_days'].apply(lambda x : 1 if x>=30 else 0) #判断是否违约
+loan_df.to_csv('loan_info.csv',index=False,encoding='utf-8-sig')
+print('贷款业务表生成完毕')
+print('贷款表前十行数据：',cust_df.head(10))
+print('贷款表形状：',cust_df.shape)
