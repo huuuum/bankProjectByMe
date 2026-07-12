@@ -32,11 +32,29 @@ cust_df = loan_df.drop_duplicates(subset=['loan_id'],keep='first')
 
 # 缺失值处理
 print('用户表缺失值：',cust_df.isna().sum())
+cust_df = cust_df.dropna(subset=['cust_id'])
+cust_df['education'] = cust_df['education'].fillna('未知')
+cust_df['cust_level'] = cust_df['cust_level'].fillna('未知')
+cust_df['age'] = cust_df['age'].fillna('未知')
+cust_df['register_years'] = cust_df['register_years'].fillna('未知')
+
 print('贷款表缺失值：',loan_df.isna().sum())
+loan_df = loan_df.dropna(subset=['loan_id'])
+loan_df['loan_amount'] = loan_df['loan_amount'].fillna('未知')
+loan_df['overdue_days'] = loan_df['overdue_days'].fillna('未知')
+loan_df['loan_term'] = loan_df['loan_term'].fillna('未知')
+loan_df['loan_type'] = loan_df['loan_type'].fillna('未知')
+loan_df['issue_date'] = loan_df['issue_date'].fillna('未知')
 
 # 异常值处理
 loan_df = loan_df[loan_df["loan_amount"] > 0 ]
 loan_df = loan_df[loan_df["overdue_days"] >= 0 ]
 
+# 合并两表
 full_df = pd.merge(loan_df,cust_df,on='cust_id',how='left')
+
+# 按照学历中位值,填补收入缺失值
+full_df['income'] = full_df.groupby('education')['income'].transform(lambda x : x.fillna(x.median()))
+# transform函数要求输出结果长度和原表长度一致，适合缺失值的补充。apply输出长度没有限制
+
 full_df.to_csv('data/full_info.csv',index=False,encoding='utf-8-sig')
