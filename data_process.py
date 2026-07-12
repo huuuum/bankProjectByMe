@@ -7,17 +7,17 @@ import matplotlib.pyplot as plt
 # 基础数据探索
 cust_df = pd.read_csv('data/cust_info.csv')
 loan_df = pd.read_csv('data/loan_info.csv')
-#
-# print('用户表前五行：\n',cust_df.head())
-# print('用户表基础信息：\n',cust_df.info())
-#
-# print('贷款表前五行：\n',loan_df.head())
-# print('贷款表基础信息：\n',loan_df.info())
-# print('贷款表数值字段统计：\n',loan_df[["loan_amount", "overdue_days", "is_default"]].describe())
-#
-# default_rate = loan_df['is_default'].mean()
-# print(f'\n贷款违约率：{default_rate:.2%}')
-#
+
+print('用户表前五行：\n',cust_df.head())
+print('用户表基础信息：\n',cust_df.info())
+
+print('贷款表前五行：\n',loan_df.head())
+print('贷款表基础信息：\n',loan_df.info())
+print('贷款表数值字段统计：\n',loan_df[["loan_amount", "overdue_days", "is_default"]].describe())
+
+default_rate = loan_df['is_default'].mean()
+print(f'\n贷款违约率：{default_rate:.2%}')
+
 # 重复值处理
 print('用户表缺失值数量：',cust_df.duplicated().sum())
 print('贷款表缺失值数量：',loan_df.duplicated().sum())
