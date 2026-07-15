@@ -27,7 +27,7 @@ print('贷款表id缺失值数量：',loan_df.duplicated(subset=['loan_id']).sum
 cust_df = cust_df.drop_duplicates(keep='first')
 loan_df = loan_df.drop_duplicates(keep='first')
 cust_df = cust_df.drop_duplicates(subset=['cust_id'],keep='first')
-cust_df = loan_df.drop_duplicates(subset=['loan_id'],keep='first')
+loan_df = loan_df.drop_duplicates(subset=['loan_id'],keep='first')
 
 
 # 缺失值处理
