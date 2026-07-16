@@ -1,6 +1,13 @@
+from venv import create
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy.lib import user_array
+from sqlalchemy import create_engine
+from sqlalchemy.future import engine
+
+from data_process import full_df
 
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
@@ -40,3 +47,18 @@ loan_df.to_csv('data/loan_info.csv',index=False,encoding='utf-8-sig')
 print('贷款业务表生成完毕')
 print('贷款表前十行数据：',cust_df.head(10))
 print('贷款表形状：',cust_df.shape)
+
+# 写入数据库
+user = 'root'
+password = 'okb13950958240'
+host = 'localhost'
+port = 3306
+dbname = 'bank_data'
+
+engine = create_engine(f'mysql+pymysql://{user}:{password}@{host}:{port}/{dbname}?charset=utf8mb4')
+
+cust_df.to_sql('cust_info',engine,if_exists='replace',index=False)
+loan_df.to_sql('loan_info',engine,if_exists='replace',index=False)
+full_df.to_sql('full_info',engine,if_exists='replace',index=False)
+
+print('写入数据库完成')
