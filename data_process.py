@@ -64,6 +64,7 @@ full_df['age_group'] = pd.cut(
     bins=[18,25,35,45,55,65,75],
     labels=['18-25岁','26-35岁','36-45岁','46-55岁','56-65岁','66-75岁']
 )
+full_df = full_df.dropna(subset=['age_group'])
 
 full_df.to_csv('data/full_info.csv',index=False,encoding='utf-8-sig')
 

@@ -75,3 +75,16 @@ df_age_default['default_rate'] = df_age_default['default_rate'].apply(lambda x :
 df_age_default['avg_loan_amount'] = df_age_default['avg_loan_amount'].apply(lambda x : f'{x / 10000:.1f}万元')
 print('\n---------按年龄分类----------')
 print(df_age_default)
+
+# 月度放款趋势
+sql_month_default = '''
+SELECT
+    DATE_FORMAT(issue_date,'%%Y-%%m') AS month,
+    SUM(loan_amount) AS month_amount
+FROM full_info GROUP BY month ORDER BY month;
+'''
+
+df_month_default = pd.read_sql(sql_month_default,engine)
+df_month_default['mouth_amount'] = df_month_default['month_amount'].apply(lambda x : f'{x / 10000:.2f}万元')
+print('\n---------月度放款趋势----------')
+print(df_month_default)
