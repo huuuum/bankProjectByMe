@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sqlalchemy import create_engine
+
+from user_data_generate import engine
 
 # 基础数据探索
 cust_df = pd.read_csv('data/cust_info.csv')
@@ -55,4 +58,20 @@ full_df = pd.merge(loan_df,cust_df,on='cust_id',how='left')
 full_df['income'] = full_df.groupby('education')['income'].transform(lambda x : x.fillna(x.median()))
 # transform函数要求输出结果长度和原表长度一致，适合缺失值的补充。apply输出长度没有限制
 
+# 年龄分箱
+full_df['age_group'] = pd.cut(
+    full_df['age'],
+    bins=[18,25,35,45,55,65,75],
+    labels=['18-25岁','26-35岁','36-45岁','46-55岁','56-65岁','66-75岁']
+)
+
 full_df.to_csv('data/full_info.csv',index=False,encoding='utf-8-sig')
+
+user = 'root'
+password = 'okb13950958240'
+port = 3306
+database = 'bank_data'
+host = '127.0.0.1'
+
+engine = create_engine(f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}?charset=utf8mb4')
+full_df.to_sql('full_info',engine,if_exists='replace',index=False)

@@ -5,9 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numpy.lib import user_array
 from sqlalchemy import create_engine
-from sqlalchemy.future import engine
 
-from data_process import full_df
 
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
@@ -59,6 +57,5 @@ engine = create_engine(f'mysql+pymysql://{user}:{password}@{host}:{port}/{dbname
 
 cust_df.to_sql('cust_info',engine,if_exists='replace',index=False)
 loan_df.to_sql('loan_info',engine,if_exists='replace',index=False)
-full_df.to_sql('full_info',engine,if_exists='replace',index=False)
 
 print('写入数据库完成')
