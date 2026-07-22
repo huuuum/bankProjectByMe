@@ -19,7 +19,7 @@ SELECT
     COUNT(loan_id) AS total_loan_count,
     SUM(is_default) AS total_is_default,
     ROUND(SUM(is_default) / COUNT(loan_id),4) AS default_rate
-FROM full_info;
+FROM loan_info;
 """
 df_total_default = pd.read_sql(sql_total_default,engine)
 df_total_default['default_rate'] = df_total_default['default_rate'].apply(lambda x : f'{x:.2%}')
@@ -35,7 +35,7 @@ SELECT
     SUM(loan_amount) AS total_loan_amount,
     ROUND(SUM(is_default) / COUNT(loan_id),4) AS default_rate,
     ROUND(AVG(loan_amount),0) AS avg_loan_amount
-FROM full_info GROUP BY loan_type;
+FROM loan_info GROUP BY loan_type;
 """
 
 df_type_default = pd.read_sql(sql_type_default,engine)
@@ -45,15 +45,27 @@ print('\n---------按类型分类----------')
 print(df_type_default)
 
 # 按等级分类
+# sql_level_default = """
+# SELECT
+#     cust_level,
+#     COUNT(loan_id) AS total_loan_count,
+#     SUM(is_default) AS total_is_default,
+#     SUM(loan_amount) AS total_loan_amount,
+#     ROUND(SUM(is_default) / COUNT(loan_id),4) AS default_rate,
+#     ROUND(AVG(loan_amount),0) AS avg_loan_amount
+# FROM full_info GROUP BY cust_level;
+# """
+
 sql_level_default = """
 SELECT 
-    cust_level,
+    c.cust_level,
     COUNT(loan_id) AS total_loan_count,
-    SUM(is_default) AS total_is_default,
-    SUM(loan_amount) AS total_loan_amount,
-    ROUND(SUM(is_default) / COUNT(loan_id),4) AS default_rate,
-    ROUND(AVG(loan_amount),0) AS avg_loan_amount
-FROM full_info GROUP BY cust_level;
+    COUNT(DISTINCT l.cust_id) AS total_cust_id,
+    ROUND(SUM(l.is_default) / COUNT(l.cust_id),4) AS default_rate,
+    ROUND(AVG(l.loan_amount),0) AS avg_loan_amount
+FROM loan_info AS l
+LEFT JOIN cust_info AS c ON l.cust_id = c.cust_id
+GROUP BY c.cust_level ORDER BY default_rate DESC ; 
 """
 
 df_level_default = pd.read_sql(sql_level_default,engine)
@@ -63,16 +75,36 @@ print('\n---------按等级分类----------')
 print(df_level_default)
 
 # 按年龄分类
+# sql_age_default = """
+# SELECT
+#     age_group,
+#     COUNT(loan_id) AS total_loan_count,
+#     SUM(is_default) AS total_is_default,
+#     SUM(loan_amount) AS total_loan_amount,
+#     ROUND(SUM(is_default) / COUNT(loan_id),4) AS default_rate,
+#     ROUND(AVG(loan_amount),0) AS avg_loan_amount
+# FROM full_info GROUP BY age_group;
+# """
+
 sql_age_default = """
 SELECT 
-    age_group,
-    COUNT(loan_id) AS total_loan_count,
-    COUNT(loan_id) AS total_loan_count,
-    SUM(is_default) AS total_is_default,
-    SUM(loan_amount) AS total_loan_amount,
-    ROUND(SUM(is_default) / COUNT(loan_id),4) AS default_rate,
-    ROUND(AVG(loan_amount),0) AS avg_loan_amount
-FROM full_info GROUP BY age_group;
+    CASE
+        WHEN c.age BETWEEN 18 AND 25 THEN '18-25岁'
+        WHEN c.age BETWEEN 26 AND 35 THEN '26-35岁'
+        WHEN c.age BETWEEN 36 AND 45 THEN '36-45岁'
+        WHEN c.age BETWEEN 46 AND 55 THEN '46-55岁'
+        WHEN c.age BETWEEN 56 AND 65 THEN '56-65岁'
+        WHEN c.age BETWEEN 66 AND 75 THEN '66-75岁'
+        ELSE '异常年龄'
+    END AS age_group,
+    COUNT(l.loan_id) AS total_loan_count,
+    SUM(l.is_default) AS total_is_default,
+    SUM(l.loan_amount) AS total_loan_amount,
+    ROUND(SUM(l.is_default) / COUNT(l.loan_id),4) AS default_rate,
+    ROUND(AVG(l.loan_amount),0) AS avg_loan_amount
+FROM loan_info AS l 
+LEFT JOIN cust_info AS c ON l.cust_id = c.cust_id
+GROUP BY age_group ORDER BY age_group;
 """
 df_age_default = pd.read_sql(sql_age_default,engine)
 df_age_default['default_rate'] = df_age_default['default_rate'].apply(lambda x : f'{x:.2%}')
